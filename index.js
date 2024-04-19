@@ -123,4 +123,98 @@ const RootMutationType = new GraphQLObjectType({
     })
 });
 
-module.exports = { UserType, AuthMutationType, VitalSignsType, RootMutationType };
+// Define the GraphQL type for PatientInfo
+const PatientInfoType = new GraphQLObjectType({
+    name: 'PatientInfo',
+    description: 'This represents patient information',
+    fields: () => ({
+        _id: { type: GraphQLNonNull(GraphQLID) },
+        userId: { type: GraphQLNonNull(GraphQLID) },
+        date: { type: GraphQLString },
+        pulseRate: { type: GraphQLFloat },
+        bloodPressure: { type: GraphQLString },
+        weight: { type: GraphQLFloat },
+        temperature: { type: GraphQLFloat },
+        respiratoryRate: { type: GraphQLFloat }
+    })
+});
+
+// Define the GraphQL mutation for PatientInfo
+const PatientInfoMutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    description: 'Root Mutation',
+    fields: () => ({
+        createPatientInfo: {
+            type: PatientInfoType,
+            description: 'Create a new patient information',
+            args: {
+                userId: { type: GraphQLNonNull(GraphQLID) },
+                pulseRate: { type: GraphQLFloat },
+                bloodPressure: { type: GraphQLString },
+                weight: { type: GraphQLFloat },
+                temperature: { type: GraphQLFloat },
+                respiratoryRate: { type: GraphQLFloat }
+            },
+            resolve: async (parent, args) => {
+                try {
+                    const newPatientInfo = new PatientInfo({ ...args });
+                    const savedPatientInfo = await newPatientInfo.save();
+                    return savedPatientInfo;
+                } catch (err) {
+                    console.error(err);
+                    throw new Error('Error creating patient information');
+                }
+            }
+        }
+    })
+});
+
+// Define the GraphQL type for SymptomChecklist
+const SymptomChecklistType = new GraphQLObjectType({
+    name: 'SymptomChecklist',
+    description: 'This represents a symptom checklist',
+    fields: () => ({
+        _id: { type: GraphQLNonNull(GraphQLID) },
+        userId: { type: GraphQLNonNull(GraphQLID) },
+        date: { type: GraphQLString },
+        symptoms: { type: GraphQLList(GraphQLString) }
+    })
+});
+
+// Define the GraphQL mutation for SymptomChecklist
+const SymptomChecklistMutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    description: 'Root Mutation',
+    fields: () => ({
+        createSymptomChecklist: {
+            type: SymptomChecklistType,
+            description: 'Create a new symptom checklist',
+            args: {
+                userId: { type: GraphQLNonNull(GraphQLID) },
+                symptoms: { type: GraphQLList(GraphQLString) }
+            },
+            resolve: async (parent, args) => {
+                try {
+                    const newSymptomChecklist = new SymptomChecklist({ ...args });
+                    const savedSymptomChecklist = await newSymptomChecklist.save();
+                    return savedSymptomChecklist;
+                } catch (err) {
+                    console.error(err);
+                    throw new Error('Error creating symptom checklist');
+                }
+            }
+        }
+    })
+});
+
+
+module.exports = { 
+    UserType, 
+    AuthMutationType, 
+    VitalSignsType, 
+    VitalSignsMutationType,
+    PatientInfoType, 
+    PatientInfoMutationType,
+    SymptomChecklistType, 
+    SymptomChecklistMutationType
+};
