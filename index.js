@@ -1,10 +1,10 @@
 const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLNonNull, GraphQLList, GraphQLFloat, GraphQLEnumType } = require('graphql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const VitalSigns = require('../models/vitalSigns');
-const PatientInfo = require('../models/patientInfo');
-const SymptomChecklist = require('../models/symptomChecklist');
+const User = require('./models/user');
+const VitalSigns = require('./models/vitalsigns');
+const PatientInfo = require('./models/PatientInfo');
+const SymptomChecklist = require('./models/SymptomChecklist');
 
 // Define the GraphQL type for User
 const UserType = new GraphQLObjectType({
