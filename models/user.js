@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Please enter a password'],
-        minlength: [6, 'Minimum length of password is 6']
+        minlength: [6, 'Minimum password length is 6 characters']
     },
     role: {
         type: String,
@@ -22,9 +22,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// Salting and hashing the password before saving the user
 userSchema.pre('save', async function(next) {
-    // Only hash the password if it has been modified (or is new)
     if (this.isModified('password')) {
         const salt = await bcrypt.genSalt();
         this.password = await bcrypt.hash(this.password, salt);
@@ -32,19 +30,19 @@ userSchema.pre('save', async function(next) {
     next();
 });
 
-// Static method to login user
 userSchema.statics.login = async function(email, password) {
-    const user = await this.findOne({ email });
-    if (user) {
-        const auth = await bcrypt.compare(password, user.password);
-        if (auth) {
-            return user;
-        }
+    const user = await this.findOne({ email }).select('+password');
+    if (!user) {
+        throw Error('Email does not exist');
+    }
+    const auth = await bcrypt.compare(password, user.password);
+    if (!auth) {
         throw Error('Incorrect password');
     }
-    throw Error('Incorrect email');
+    return user;
 };
 
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
+
